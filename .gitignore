@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 media/
-
+output.txt
 *.ico
 
 
