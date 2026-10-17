@@ -1,7 +1,13 @@
-from manim import *
+from __future__ import annotations
+
+import configparser
+import logging
+import re
 import sys
 from pathlib import Path
-import configparser
+from syslog import LOG_INFO
+
+from manim import DOWN, Scene, SVGMobject, Text, Write, config as manim_config, tempconfig
 
 if getattr(sys, "frozen", False):
     BASE_DIR = Path(sys.executable).resolve().parent
@@ -11,14 +17,39 @@ else:
 ASSETS_DIR = BASE_DIR / "assets"
 CONFIG_PATH = BASE_DIR / "manimation.ini"
 
-config = configparser.ConfigParser()
-config.read(CONFIG_PATH)
+logger = logging.getLogger("manimation")
+logger.setLevel(LOG_INFO)
+logger.handlers.clear()
+logger.propagate = False
 
-width = config.getint("render", "width", fallback=1920)
-height = config.getint("render", "height", fallback=1080)
-fps = config.getint("render", "fps", fallback=60)
-duration = config.getfloat("render", "duration", fallback=4.0)
-animation_duration = config.getfloat("render", "animation_duration", fallback=3.0)
+formatter = logging.Formatter(f"%(asctime)s [manimation]:%(levelname)s: %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+
+try:
+    file_handler = logging.FileHandler(LOG_PATH, encoding="utf-8")
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+except OSError:
+    pass
+
+if sys.stderr is not None:
+    console_handler = logging.StreamHandler(sys.stderr)
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+LOGGER = logger
+
+parser = configparser.ConfigParser()
+if CONFIG_PATH.exists():
+    parser.read(CONFIG_PATH, encoding="utf-8")
+else:
+    LOGGER.warning("manimation.ini was not found; using built in defaults.")
+
+width = parser.getint("render", "width", fallback=1920)
+height = parser.getint("render", "height", fallback=1080)
+fps = parser.getint("render", "fps", fallback=60)
+duration = parser.getfloat("render", "duration", fallback=4.0)
+animation_duration = parser.getfloat("render", "animation_duration", fallback=3.0)
+font_name = parser.get("text", "font", fallback="").strip()
 
 def validate_config(width, height, fps, duration, animation_duration):
     errors = []
