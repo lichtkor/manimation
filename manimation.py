@@ -14,5 +14,8 @@ icon_name = icon_path.stem.replace("_", " ").replace("-", " ").title()
 class demo(Scene):
     def construct(self):
         t = SVGMobject(icon_path)
-        self.play(Write(t), run_time=4)
+        label = Text(icon_name)
+        label.next_to(t, DOWN, buff=0.4)
+        
+        self.play(Write(t), Write(label), run_time=4)
         self.wait()
