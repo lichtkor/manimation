@@ -1,4 +1,3 @@
-
 import configparser
 import logging
 import sys
@@ -40,6 +39,11 @@ try:
     font_name = parser.get("text", "font", fallback="Arial").strip()
 
     if font_name and font_name.casefold() not in {font.casefold() for font in manimpango.list_fonts()}:
+        try:
+            with open(LOG_PATH, "a", encoding="utf-8") as log_file:
+                log_file.write(f"[manimation]:WARNING: Font '{font_name}' not found; using default font.\n")
+        except OSError:
+            pass
         font_name = ""
 
     if not 320 <= width <= 3840:
@@ -69,12 +73,27 @@ try:
             self.play(Write(t), Write(label), run_time=animation_duration)
             self.wait(duration - animation_duration)
 
+    failed_files = []
+
     for icon_path in icon_files:
         icon_name = icon_path.stem.replace("_", " ").replace("-", " ").title()
         logger.info("Rendering %s", icon_path.name)
 
-        with tempconfig({"pixel_width": width, "pixel_height": height, "frame_rate": fps, "output_file": icon_name, "media_dir": str(BASE_DIR / "media")}):
-            Demo().render()
+        try:
+            with tempconfig({"pixel_width": width, "pixel_height": height, "frame_rate": fps, "output_file": icon_name, "media_dir": str(BASE_DIR / "media")}):
+                Demo().render()
+        except Exception as exc:
+            failed_files.append(icon_path.name)
+            logger.error("%s: %s", icon_path.name, exc)
+
+            try:
+                with open(LOG_PATH, "a", encoding="utf-8") as log_file:
+                    log_file.write(f"[manimation]:ERROR: {icon_path.name}: {exc}\n")
+            except OSError:
+                pass
+
+    if failed_files:
+        raise RuntimeError("Failed to render: " + ", ".join(failed_files))
 
 except Exception as exc:
     logger.error("%s", exc)
