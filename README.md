@@ -8,7 +8,7 @@ Pick an icon, adjust a few settings, run the program, and let it do the work.
 ## Getting Started
 
 1. Extract the Manimation release folder.
-2. Put **exactly one `.svg` file** inside the `assets` folder.
+2. Put **as many `.svg` files** inside the `assets` folder as you want.
 3. (Optional) Open `manimation.ini` to adjust the video settings.
 4. Run `manimation.exe` and wait for the render to finish.
 5. Find your finished video inside `media/videos/`.
@@ -26,6 +26,9 @@ height = 1080
 fps = 60
 duration = 4
 animation_duration = 3
+
+[text]
+font = Arial
 ```
 
 `width`: Video width in pixels
@@ -33,6 +36,7 @@ animation_duration = 3
 `fps`: Frames per second (capped at 120)
 `duration`: Total video duration in seconds
 `animation_duration`: How long the animation should play
+`font`: The font used for the text
 
 Keep the values within the supported ranges.
 The animation duration must be positive and cannot exceed the total duration.
