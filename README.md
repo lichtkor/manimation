@@ -1,5 +1,9 @@
 # Manimation
 
+<p align="center">
+    <img src="content/manimation.png" alt="Manimation icon">
+</p>
+
 **Turn SVG's into animations**
 
 Manimation is a small easy to use tool that turns an SVG icon into an animated video.
@@ -41,18 +45,19 @@ font = Arial
 Keep the values within the supported ranges.
 The animation duration must be positive and cannot exceed the total duration.
 
+![Minecraft animation preview](content/manimation-example.gif)
+
 ## Troubleshooting
 
 **The program closes or doesn't create a video?**
 
 - Make sure `assets` is next to `manimation.exe`.
-- Make sure `assets` contains exactly one SVG file.
 - Check that `manimation.ini` is next to the executable and its values are valid.
 - Make sure the SVG is valid and can be opened by an SVG viewer.
 
 **Still stuck?**
 Open an issue in the project repository and include the error message.
-Don't include private information in logs.
+Don't include private information in logs or look for a output.txt file.
 
 ## A few things to know
 
